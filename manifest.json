@@ -1,0 +1,22 @@
+
+{
+    "id": "./index.html",
+    "name": "Pokédex Pokémon",
+    "short_name": "Pokédex",
+    "description": "Explora Pokémon, descubre sus tipos y consulta sus características.",
+    "lang": "es",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f5f7fb",
+    "theme_color": "#e63946",
+    "icons": [
+        {
+            "src": "./imagenes/pokemon-icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}

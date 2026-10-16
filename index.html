@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#e63946">
+    <meta name="description" content="Explora, busca y descubre tus Pokémon favoritos con esta Pokédex.">
+    <title>Pokédex | Pokémon</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./imagenes/pokemon-icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <a href="./index.html" class="logo">
+            <span class="pokeball">◉</span>
+            Pokédex
+        </a>
+        <span class="header-label">Explora el mundo Pokémon</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">TU AVENTURA COMIENZA AQUÍ</p>
+            <h1>Encuentra tu Pokémon</h1>
+            <p class="hero-description">
+                Descubre sus tipos, habilidades y características.
+            </p>
+
+            <form id="search-form" class="search-form">
+                <input
+                    type="search"
+                    id="search-input"
+                    placeholder="Busca por nombre o número..."
+                    autocomplete="off"
+                    aria-label="Buscar Pokémon"
+                >
+                <button type="submit" class="search-button">Buscar</button>
+            </form>
+
+            <p id="status-message" class="status-message" role="status">
+                Cargando Pokémon...
+            </p>
+        </section>
+
+        <section class="catalog">
+            <div class="catalog-heading">
+                <div>
+                    <h2>Pokémon</h2>
+                    <p>Explora la colección y descubre sus detalles.</p>
+                </div>
+                <span id="pokemon-count" class="pokemon-count">0 Pokémon</span>
+            </div>
+
+            <div id="type-filters" class="type-filters">
+                <button class="filter-button active" data-type="all">Todos</button>
+                <button class="filter-button" data-type="grass">Planta</button>
+                <button class="filter-button" data-type="fire">Fuego</button>
+                <button class="filter-button" data-type="water">Agua</button>
+                <button class="filter-button" data-type="electric">Eléctrico</button>
+                <button class="filter-button" data-type="bug">Bicho</button>
+                <button class="filter-button" data-type="normal">Normal</button>
+                <button class="filter-button" data-type="poison">Veneno</button>
+                <button class="filter-button" data-type="psychic">Psíquico</button>
+                <button class="filter-button" data-type="rock">Roca</button>
+                <button class="filter-button" data-type="ground">Tierra</button>
+                <button class="filter-button" data-type="fairy">Hada</button>
+                <button class="filter-button" data-type="fighting">Lucha</button>
+                <button class="filter-button" data-type="ghost">Fantasma</button>
+                <button class="filter-button" data-type="ice">Hielo</button>
+                <button class="filter-button" data-type="dragon">Dragón</button>
+                <button class="filter-button" data-type="dark">Siniestro</button>
+                <button class="filter-button" data-type="steel">Acero</button>
+                <button class="filter-button" data-type="flying">Volador</button>
+            </div>
+
+            <div id="pokemon-grid" class="pokemon-grid"></div>
+
+            <div id="empty-state" class="empty-state" hidden>
+                <h3>No se encontraron Pokémon</h3>
+                <p>Prueba con otro nombre, número o tipo.</p>
+                <button id="reset-button" class="search-button">Ver todos</button>
+            </div>
+
+            <div class="load-container">
+                <button id="load-more" class="load-button">
+                    Cargar más Pokémon
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <div id="pokemon-modal" class="modal" hidden>
+        <div class="modal-backdrop" data-close="true"></div>
+        <section
+            class="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-name"
+        >
+            <button id="close-modal" class="close-button" aria-label="Cerrar detalles">
+                &times;
+            </button>
+            <div id="modal-body"></div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>Pokédex creada con HTML, CSS, JavaScript y PokéAPI.</p>
+        <p>Proyecto educativo no oficial de Pokémon.</p>
+    </footer>
+
+    <script src="./js/app.js"></script>
+</body>
+</html>
