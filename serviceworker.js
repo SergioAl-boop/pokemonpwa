@@ -10,7 +10,7 @@ const STATIC_FILES = [
     "./manifest.json",
     "./css/style.css",
     "./js/app.js",
-    "./imagenes/pokemon-icon.svg"
+    "./imagenes/pokebola-icon.png"
 ];
 
 self.addEventListener("install", event => {

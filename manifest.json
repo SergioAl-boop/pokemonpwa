@@ -1,8 +1,8 @@
 
 {
     "id": "./index.html",
-    "name": "Pokédex Pokémon",
-    "short_name": "Pokédex",
+    "name": "PokémonPWA",
+    "short_name": "PokémonPWA",
     "description": "Explora Pokémon, descubre sus tipos y consulta sus características.",
     "lang": "es",
     "start_url": "./index.html",
@@ -13,9 +13,9 @@
     "theme_color": "#e63946",
     "icons": [
         {
-            "src": "./imagenes/pokemon-icon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml",
+            "src": "./imagenes/pokebola-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
             "purpose": "any"
         }
     ]
