@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "pokedex-v1";
+const CACHE_NAME = "pokedex-v2";
 const STATIC_CACHE = `${CACHE_NAME}-static`;
 const API_CACHE = `${CACHE_NAME}-api`;
 const IMAGE_CACHE = `${CACHE_NAME}-images`;
@@ -8,7 +8,7 @@ const STATIC_FILES = [
     "./",
     "./index.html",
     "./manifest.json",
-    "./css/style.css",
+    "./css/styles.css",
     "./js/app.js",
     "./imagenes/pokebola-icon.png"
 ];
@@ -16,7 +16,17 @@ const STATIC_FILES = [
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(STATIC_CACHE)
-            .then(cache => cache.addAll(STATIC_FILES))
+            .then(async cache => {
+                for (const file of STATIC_FILES) {
+                    const response = await fetch(file);
+
+                    if (!response.ok) {
+                        throw new Error(`No se pudo guardar: ${file}`);
+                    }
+
+                    await cache.put(file, response);
+                }
+            })
             .then(() => self.skipWaiting())
     );
 });
@@ -51,12 +61,12 @@ async function networkFirst(request, cacheName) {
         }
 
         return response;
-    } catch (error) {
+    } catch {
         const cached = await cache.match(request);
 
         if (cached) return cached;
 
-        throw error;
+        throw new Error("No hay conexión ni datos guardados.");
     }
 }
 
@@ -87,19 +97,19 @@ self.addEventListener("fetch", event => {
             event.respondWith(
                 fetch(request).catch(async () => {
                     return await caches.match("./index.html")
-                        || Response.error();
+                        || new Response("Aplicación no disponible.", {
+                            status: 503
+                        });
                 })
             );
+
             return;
         }
 
         event.respondWith(
             cacheFirst(request, STATIC_CACHE).catch(() =>
                 new Response("Recurso no disponible sin conexión.", {
-                    status: 503,
-                    headers: {
-                        "Content-Type": "text/plain; charset=utf-8"
-                    }
+                    status: 503
                 })
             )
         );
@@ -112,7 +122,7 @@ self.addEventListener("fetch", event => {
             networkFirst(request, API_CACHE).catch(() =>
                 new Response(
                     JSON.stringify({
-                        error: "Sin conexión y sin datos guardados."
+                        error: "No hay conexión ni datos guardados."
                     }),
                     {
                         status: 503,
@@ -127,10 +137,7 @@ self.addEventListener("fetch", event => {
         return;
     }
 
-    if (
-        url.hostname === "raw.githubusercontent.com" ||
-        url.hostname === "raw.pokeapi.co"
-    ) {
+    if (url.hostname === "raw.githubusercontent.com") {
         event.respondWith(
             cacheFirst(request, IMAGE_CACHE).catch(() =>
                 Response.error()
