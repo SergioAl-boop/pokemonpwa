@@ -3,7 +3,26 @@ const API_URL = "https://pokeapi.co/api/v2/pokemon/";
 const CACHE_KEY = "pokedex-pokemon-v1";
 const PAGE_SIZE = 24;
 
-
+const TYPE_NAMES = {
+    normal: "Normal",
+    fire: "Fuego",
+    water: "Agua",
+    electric: "Eléctrico",
+    grass: "Planta",
+    ice: "Hielo",
+    fighting: "Lucha",
+    poison: "Veneno",
+    ground: "Tierra",
+    flying: "Volador",
+    psychic: "Psíquico",
+    bug: "Bicho",
+    rock: "Roca",
+    ghost: "Fantasma",
+    dragon: "Dragón",
+    dark: "Siniestro",
+    steel: "Acero",
+    fairy: "Hada"
+};
 
 const TYPE_COLORS = {
     normal: "#e5e2d8",
