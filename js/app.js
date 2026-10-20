@@ -505,56 +505,58 @@ function isAppInstalled() {
 }
 
 function updateInstallButton() {
+    if (!installButton) return;
+
     if (isAppInstalled()) {
         installButton.hidden = true;
-        deferredInstallPrompt = null;
-    }
-}
-
-updateInstallButton();
-
-window.addEventListener("beforeinstallprompt", event => {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    installButton.hidden = isAppInstalled();
-});
-
-installButton.addEventListener("click", async () => {
-    if (!deferredInstallPrompt || isAppInstalled()) {
-        updateInstallButton();
         return;
     }
 
-    const installPrompt = deferredInstallPrompt;
-    deferredInstallPrompt = null;
+    installButton.hidden = false;
+}
 
-    installButton.disabled = true;
-    installButton.textContent = "Esperando confirmación...";
+if (installButton) {
+    updateInstallButton();
 
-    try {
-        await installPrompt.prompt();
+    window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        updateInstallButton();
+    });
 
-        const choice = await installPrompt.userChoice;
-
-        if (choice.outcome === "accepted") {
-            installButton.hidden = true;
-        } else {
-            installButton.hidden = true;
+    installButton.addEventListener("click", async () => {
+        if (isAppInstalled()) {
+            updateInstallButton();
+            return;
         }
-    } catch (error) {
-        console.error("Error al instalar la PWA:", error);
-    } finally {
-        installButton.disabled = false;
-        installButton.innerHTML =
-            '<span class="install-icon">↓</span> Instalar aplicación';
-    }
-});
 
-window.addEventListener("appinstalled", () => {
-    deferredInstallPrompt = null;
-    installButton.hidden = true;
-});
+        if (!deferredInstallPrompt) {
+            alert(
+                "Para instalar la Pokédex, abre el menú de Chrome y selecciona Instalar aplicación o Agregar a pantalla principal."
+            );
+            return;
+        }
 
-window.matchMedia("(display-mode: standalone)")
-    .addEventListener("change", updateInstallButton);
+        const promptEvent = deferredInstallPrompt;
+        deferredInstallPrompt = null;
 
+        try {
+            await promptEvent.prompt();
+            const choice = await promptEvent.userChoice;
+
+            if (choice.outcome === "accepted") {
+                installButton.hidden = true;
+            }
+        } catch (error) {
+            console.error("Error al instalar la PWA:", error);
+        }
+    });
+
+    window.addEventListener("appinstalled", () => {
+        deferredInstallPrompt = null;
+        installButton.hidden = true;
+    });
+
+    window.matchMedia("(display-mode: standalone)")
+        .addEventListener("change", updateInstallButton);
+}
