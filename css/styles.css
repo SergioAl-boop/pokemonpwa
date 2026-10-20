@@ -567,3 +567,87 @@ input:focus-visible {
         align-items: flex-start;
     }
 }
+
+
+
+
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+}
+
+
+.install-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 11px 17px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e63946, #c62836);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px #e6394633;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.install-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px #e6394644;
+}
+
+.install-button:active {
+    transform: scale(0.97);
+}
+
+.install-button:focus-visible {
+    outline: 3px solid #7aa7ff;
+    outline-offset: 3px;
+}
+
+.install-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid #ffffffaa;
+    border-radius: 7px;
+    font-size: 20px;
+    line-height: 1;
+}
+
+
+.install-button[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 650px) {
+    .header-actions {
+        gap: 8px;
+    }
+
+    .header-label {
+        display: none;
+    }
+
+    .install-button {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .install-button {
+        transition: none;
+    }
+}
+

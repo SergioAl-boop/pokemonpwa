@@ -492,3 +492,69 @@ if ("serviceWorker" in navigator) {
 }
 
 initializeApp();
+
+
+
+let deferredInstallPrompt = null;
+
+const installButton = document.getElementById("install-button");
+
+function isAppInstalled() {
+    return window.matchMedia("(display-mode: standalone)").matches
+        || window.navigator.standalone === true;
+}
+
+function updateInstallButton() {
+    if (isAppInstalled()) {
+        installButton.hidden = true;
+        deferredInstallPrompt = null;
+    }
+}
+
+updateInstallButton();
+
+window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installButton.hidden = isAppInstalled();
+});
+
+installButton.addEventListener("click", async () => {
+    if (!deferredInstallPrompt || isAppInstalled()) {
+        updateInstallButton();
+        return;
+    }
+
+    const installPrompt = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+
+    installButton.disabled = true;
+    installButton.textContent = "Esperando confirmación...";
+
+    try {
+        await installPrompt.prompt();
+
+        const choice = await installPrompt.userChoice;
+
+        if (choice.outcome === "accepted") {
+            installButton.hidden = true;
+        } else {
+            installButton.hidden = true;
+        }
+    } catch (error) {
+        console.error("Error al instalar la PWA:", error);
+    } finally {
+        installButton.disabled = false;
+        installButton.innerHTML =
+            '<span class="install-icon">↓</span> Instalar aplicación';
+    }
+});
+
+window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    installButton.hidden = true;
+});
+
+window.matchMedia("(display-mode: standalone)")
+    .addEventListener("change", updateInstallButton);
+
