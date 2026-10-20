@@ -505,31 +505,29 @@ function isAppInstalled() {
 }
 
 function updateInstallButton() {
-    if (isAppInstalled()) {
-        installButton.hidden = true;
-        deferredInstallPrompt = null;
-    }
+    installButton.hidden = isAppInstalled() || !deferredInstallPrompt;
 }
 
-updateInstallButton();
-
-window.addEventListener("beforeinstallprompt", event => {
+window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
+
     deferredInstallPrompt = event;
-    installButton.hidden = isAppInstalled();
+
+    updateInstallButton();
+
+    console.log("La PWA está disponible para instalar.");
 });
 
 installButton.addEventListener("click", async () => {
-    if (!deferredInstallPrompt || isAppInstalled()) {
-        updateInstallButton();
+    if (!deferredInstallPrompt) {
+        console.warn("El navegador no ha habilitado la instalación.");
         return;
     }
 
     const installPrompt = deferredInstallPrompt;
-    deferredInstallPrompt = null;
 
+    deferredInstallPrompt = null;
     installButton.disabled = true;
-    installButton.textContent = "Esperando confirmación...";
 
     try {
         await installPrompt.prompt();
@@ -537,24 +535,29 @@ installButton.addEventListener("click", async () => {
         const choice = await installPrompt.userChoice;
 
         if (choice.outcome === "accepted") {
-            installButton.hidden = true;
+            console.log("El usuario aceptó instalar la PWA.");
         } else {
-            installButton.hidden = true;
+            console.log("El usuario canceló la instalación.");
         }
     } catch (error) {
-        console.error("Error al instalar la PWA:", error);
+        console.error("Error al mostrar la instalación:", error);
     } finally {
         installButton.disabled = false;
         installButton.innerHTML =
             '<span class="install-icon">↓</span> Instalar aplicación';
+
+        updateInstallButton();
     }
 });
 
 window.addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
     installButton.hidden = true;
+
+    console.log("La PWA se instaló correctamente.");
 });
 
 window.matchMedia("(display-mode: standalone)")
     .addEventListener("change", updateInstallButton);
 
+updateInstallButton();
