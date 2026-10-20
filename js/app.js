@@ -495,6 +495,7 @@ initializeApp();
 
 
 
+
 let deferredInstallPrompt = null;
 
 const installButton = document.getElementById("install-button");
@@ -507,16 +508,22 @@ function isAppInstalled() {
 function updateInstallButton() {
     if (!installButton) return;
 
+    // Ocultar si ya está instalada
     if (isAppInstalled()) {
         installButton.hidden = true;
         return;
     }
 
-    installButton.hidden = false;
+    // Mostrar SOLO si tenemos el evento de instalación listo
+    if (deferredInstallPrompt) {
+        installButton.hidden = false;
+    } else {
+        installButton.hidden = true;
+    }
 }
 
 if (installButton) {
-    updateInstallButton();
+    installButton.hidden = true;
 
     window.addEventListener("beforeinstallprompt", event => {
         event.preventDefault();
@@ -532,7 +539,7 @@ if (installButton) {
 
         if (!deferredInstallPrompt) {
             alert(
-                "Para instalar la Pokédex, abre el menú de Chrome y selecciona Instalar aplicación o Agregar a pantalla principal."
+                "Para instalar la Pokédex, abre el menú del navegador y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'."
             );
             return;
         }
