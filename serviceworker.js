@@ -1,4 +1,3 @@
-
 const CACHE_NAME = "pokedex-v2";
 const STATIC_CACHE = `${CACHE_NAME}-static`;
 const API_CACHE = `${CACHE_NAME}-api`;
@@ -18,13 +17,14 @@ self.addEventListener("install", event => {
         caches.open(STATIC_CACHE)
             .then(async cache => {
                 for (const file of STATIC_FILES) {
-                    const response = await fetch(file);
-
-                    if (!response.ok) {
-                        throw new Error(`No se pudo guardar: ${file}`);
+                    try {
+                        const response = await fetch(file);
+                        if (response.ok) {
+                            await cache.put(file, response);
+                        }
+                    } catch (error) {
+                        console.warn(`No se pudo precachar: ${file}`, error);
                     }
-
-                    await cache.put(file, response);
                 }
             })
             .then(() => self.skipWaiting())
@@ -96,13 +96,13 @@ self.addEventListener("fetch", event => {
         if (request.mode === "navigate") {
             event.respondWith(
                 fetch(request).catch(async () => {
-                    return await caches.match("./index.html")
-                        || new Response("Aplicación no disponible.", {
-                            status: 503
-                        });
+                    const cachedPage = await caches.match("./index.html") || await caches.match("/");
+                    return cachedPage || new Response("Aplicación no disponible sin conexión.", {
+                        status: 503,
+                        headers: { "Content-Type": "text/html; charset=utf-8" }
+                    });
                 })
             );
-
             return;
         }
 
@@ -113,7 +113,6 @@ self.addEventListener("fetch", event => {
                 })
             )
         );
-
         return;
     }
 
@@ -122,18 +121,17 @@ self.addEventListener("fetch", event => {
             networkFirst(request, API_CACHE).catch(() =>
                 new Response(
                     JSON.stringify({
-                        error: "No hay conexión ni datos guardados."
+                        error: "Sin conexión a Internet. Mostrando datos guardados."
                     }),
                     {
                         status: 503,
                         headers: {
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json; charset=utf-8"
                         }
                     }
                 )
             )
         );
-
         return;
     }
 
