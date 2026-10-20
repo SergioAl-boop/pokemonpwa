@@ -494,56 +494,50 @@ if ("serviceWorker" in navigator) {
 initializeApp();
 
 
-
-
 let deferredInstallPrompt = null;
 
 const installButton = document.getElementById("install-button");
+const standaloneQuery = window.matchMedia("(display-mode: standalone)");
 
 function isAppInstalled() {
-    return window.matchMedia("(display-mode: standalone)").matches
-        || window.navigator.standalone === true;
+    return standaloneQuery.matches || window.navigator.standalone === true;
 }
 
-function updateInstallButton() {
-    if (isAppInstalled()) {
-        installButton.hidden = true;
-        deferredInstallPrompt = null;
-    }
+function hideInstallButton() {
+    installButton.hidden = true;
 }
 
-updateInstallButton();
+function showInstallButton() {
+    installButton.hidden = !(deferredInstallPrompt && !isAppInstalled());
+}
+
+hideInstallButton();
 
 window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    installButton.hidden = isAppInstalled();
+    showInstallButton();
 });
 
 installButton.addEventListener("click", async () => {
-    if (!deferredInstallPrompt || isAppInstalled()) {
-        updateInstallButton();
+    if (!deferredInstallPrompt) {
+        hideInstallButton();
         return;
     }
 
-    const installPrompt = deferredInstallPrompt;
+    const promptEvent = deferredInstallPrompt;
     deferredInstallPrompt = null;
 
     installButton.disabled = true;
     installButton.textContent = "Esperando confirmación...";
 
-        try {
-            await promptEvent.prompt();
-            const choice = await promptEvent.userChoice;
-
-        if (choice.outcome === "accepted") {
-            installButton.hidden = true;
-        } else {
-            installButton.hidden = true;
-        }
+    try {
+        await promptEvent.prompt();
+        await promptEvent.userChoice;
     } catch (error) {
         console.error("Error al instalar la PWA:", error);
     } finally {
+        hideInstallButton();
         installButton.disabled = false;
         installButton.innerHTML =
             '<span class="install-icon">↓</span> Instalar aplicación';
@@ -552,9 +546,12 @@ installButton.addEventListener("click", async () => {
 
 window.addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
-    installButton.hidden = true;
+    hideInstallButton();
 });
 
-window.matchMedia("(display-mode: standalone)")
-    .addEventListener("change", updateInstallButton);
-
+standaloneQuery.addEventListener("change", () => {
+    if (isAppInstalled()) {
+        deferredInstallPrompt = null;
+        hideInstallButton();
+    }
+});
